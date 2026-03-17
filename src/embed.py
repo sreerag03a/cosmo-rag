@@ -2,37 +2,47 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import os
-from ingestion import extract_pdf
+from ingestion import extract_pdf,extract_from_pdfs
 from chunking import chunk_creator
 
 
 
 
 
-def embed_index(chunks):
+# def embed_index(chunks):
+#     model = SentenceTransformer('all-MiniLM-L6-v2')
+#     embeddings = model.encode(chunks)
+#     dim = embeddings.shape[1]
+#     index = faiss.IndexFlatL2(dim)
+#     index.add(np.array(embeddings))
+#     return model,index
+
+
+
+def embed_index(docs):
     model = SentenceTransformer('all-MiniLM-L6-v2')
+    chunks = [doc["text"] for doc in docs]
     embeddings = model.encode(chunks)
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
     index.add(np.array(embeddings))
     return model,index
 
+def retrieve(query,model,index,n_res = 3):
+    q_embed = model.encode([query])
+    distances,indices = index.search(q_embed,n_res)
+    return indices[0]
 
 
 if __name__ == "__main__":
-    doc_path=os.path.join(os.getcwd(),'data/2405.06750v2.pdf')
+    doc_paths=[os.path.join(os.getcwd(),'data','2405.06750v2.pdf'),os.path.join(os.getcwd(),'data','2406.18095v1.pdf'),os.path.join(os.getcwd(),'data','2308.03084v1.pdf')]
 
-    extracted_text = extract_pdf(doc_path)
-    chunks = chunk_creator(extracted_text,chunk_size=300,chunk_overlap=80)
+    extracted_text = extract_from_pdfs(doc_paths)
 
-    model,index = embed_index(chunks)
+    model,index = embed_index(extracted_text)
     query = "What is the scalar field potential?"
-    query_embed = model.encode([query])
+    indices = retrieve(query,model,index)
 
-    k = 4
-    distances,indices = index.search(query_embed,k)
-    print('Results : \n')
-
-    for i in indices[0]:
-        print(chunks[i])
+    for i in indices:
+        print(extracted_text[i])
         print('------')
