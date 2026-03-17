@@ -6,9 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
-# Ignore data files
+# Data/Document database
 data/*
-!data/README.md
 
 #Ignore ouputs
 outputs/*
