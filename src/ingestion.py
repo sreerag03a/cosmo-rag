@@ -1,6 +1,9 @@
 import pymupdf
 
 def extract_pdf(path):
+    '''
+    Takes pdf and extracts text from the pdf.
+    '''
     preprint = pymupdf.open(path)
     text=""
     for page in preprint:

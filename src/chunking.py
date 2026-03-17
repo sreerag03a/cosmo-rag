@@ -2,8 +2,11 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from ingestion import extract_pdf
 import os
 
-def chunk_creator(text):
-    chunker = RecursiveCharacterTextSplitter(chunk_size=500,chunk_overlap=100)
+def chunk_creator(text,chunk_size=500,chunk_overlap=100):
+    '''
+    Divides text into chunks of size 500 with 100 characters overlap
+    '''
+    chunker = RecursiveCharacterTextSplitter(chunk_size=chunk_size,chunk_overlap=chunk_overlap)
     chunks = chunker.split_text(text)
     return chunks
 
@@ -14,4 +17,4 @@ if __name__ == "__main__":
     extracted_text = extract_pdf(doc_path)
     chunks = chunk_creator(extracted_text)
     print(len(chunks))
-    print(chunks[50])
+    print(chunks[51])
