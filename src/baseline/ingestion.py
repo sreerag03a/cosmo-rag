@@ -1,5 +1,5 @@
 import pymupdf
-from chunking import chunk_creator
+from baseline.chunking import chunk_creator
 import os
 
 def extract_pdf(path):
@@ -14,10 +14,23 @@ def extract_pdf(path):
     text = text.replace("\n"," ")
     return text
 
+def remove_references(text):
+    keywords = ["references", "bibliography"]
+
+    text_lower = text.lower()
+
+    for keyword in keywords:
+        if keyword in text_lower:
+            index = text_lower.find(keyword)
+            return text[:index]
+
+    return text
+
 def extract_from_pdfs(paths,chunk_size=400,chunk_overlap=100):
     document = []
     for path in paths:
         pdf_text = extract_pdf(path)
+        pdf_text = remove_references(pdf_text)
         p_chunks = chunk_creator(pdf_text,chunk_size=chunk_size,chunk_overlap=chunk_overlap)
         for chunk in p_chunks:
             document.append({

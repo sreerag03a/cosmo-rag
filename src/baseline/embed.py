@@ -2,8 +2,8 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import os
-from ingestion import extract_pdf,extract_from_pdfs
-from chunking import chunk_creator
+from baseline.ingestion import extract_pdf,extract_from_pdfs
+from baseline.chunking import chunk_creator
 
 
 
