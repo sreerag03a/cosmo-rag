@@ -21,15 +21,15 @@ def rag_pipeline(query,model,index,sections,conv):
         if i in indices:
             retrieved.append(item)
     scored = [(doc,score_chunk(doc[0],query)) for doc in retrieved]
-    print(scored[0][1])
     scored.sort(key=lambda x:x[1],reverse=True)
     retrieved = [doc for doc,score in scored[:3]]
-    filtered = retrieved
-    # for t,section,src in retrieved:
-    #     for section_ in allowed_sections:
-    #         if section in section_:
-    #             filtered.append((t,section,src))
-
+    filtered = []
+    for t,section,src in retrieved:
+        for section_ in allowed_sections:
+            if section in section_:
+                filtered.append((t,section,src))
+    if not filtered:
+        filtered = retrieved
     # print(len(filtered))
     prompt = f"Use only the provided cosmology context to answer the query : {query}\n\nContext:\n"
     

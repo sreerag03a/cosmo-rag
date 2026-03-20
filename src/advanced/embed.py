@@ -28,10 +28,10 @@ def detect_query_type(query,sections):
     q = query.lower()
 
     if "model" in q:
-        return ["introduction", "model"]
+        return ["introduction", "model", "unknown"]
     elif "data" in q or "analysis" in q:
-        return ["method", "analysis", "introduction"]
+        return ["method", "introduction", "unknown"]
     elif "result" in q:
-        return ["results", "data", "analysis"]
+        return ["results", "method", "unknown"]
     else:
         return sections
