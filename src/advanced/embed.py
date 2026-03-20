@@ -32,6 +32,6 @@ def detect_query_type(query,sections):
     elif "data" in q or "analysis" in q:
         return ["method", "analysis", "introduction"]
     elif "result" in q:
-        return ["results"]
+        return ["results", "data", "analysis"]
     else:
         return sections

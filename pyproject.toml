@@ -16,6 +16,7 @@ dependencies = [
     "sentence-transformers",
     "faiss-cpu",
     "numpy",
+    "streamlit",
 ]
 
 [build-system]
