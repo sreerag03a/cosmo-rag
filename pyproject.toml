@@ -17,6 +17,7 @@ dependencies = [
     "faiss-cpu",
     "numpy",
     "streamlit",
+    "ollama",
 ]
 
 [build-system]
