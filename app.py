@@ -16,7 +16,7 @@ if mode=="Use default PDFs":
     for item in items:
         doc_paths.append(item)
     # print(doc_paths)
-    doc_chunks = extract_from_pdfs(doc_paths)
+    doc_chunks = extract_from_pdfs(doc_paths,chunk_size=300,chunk_overlap=150)
     docs_formatted = []
     for doc in doc_chunks:
         for t in doc['text']:
@@ -77,7 +77,7 @@ if query:
     if "history" not in st.session_state:
         st.session_state.history = []
     with st.spinner("Thinking..."):
-        answer = rag_pipeline(query,model,index,sections,docs_formatted,model_choice)
+        answer = rag_pipeline(query,model,index,sections,docs_formatted,model_choice)[0]
         st.session_state.history.append({
     "query": query,
     "answer": answer

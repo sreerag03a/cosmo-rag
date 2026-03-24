@@ -9,7 +9,7 @@ import os
 #     chunks = chunker.split_text(text)
 #     return chunks
 
-def chunk_per_doc_sec(doc_list,chunk_size=800,chunk_overlap=150):
+def chunk_per_doc_sec(doc_list,chunk_size=500,chunk_overlap=80):
     chunker = RecursiveCharacterTextSplitter(chunk_size=chunk_size,chunk_overlap=chunk_overlap)
     end_res = []
     for doc in doc_list:

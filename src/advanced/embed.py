@@ -6,7 +6,7 @@ from advanced.ingestion import extract_from_pdfs
 from advanced.chunking import chunk_per_doc_sec
 
 def embed_index(docs):
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+    model = SentenceTransformer('all-mpnet-base-v2')
     texts = []
     for doc in docs:
         for t in doc['text']:

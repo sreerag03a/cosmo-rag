@@ -32,8 +32,8 @@ def rag_pipeline(query,model,index,sections,conv,model_choice = "gemma:2b"):
         filtered = retrieved
     # print(len(filtered))
     prompt = f"Use only the provided cosmology context to answer the query : {query}\n\nContext:\n"
-    for t in filtered:
-        print(t[0])
+    # for t in filtered:
+    #     print(t[0])
     for t in filtered:
         # print(t[2])
         prompt += f"Source :{t[2]}, text : {t[0]}"
@@ -45,14 +45,14 @@ def rag_pipeline(query,model,index,sections,conv,model_choice = "gemma:2b"):
     reply = response['message']['content']
     print('RAG Response:')
     print(reply)
-    return reply
+    return reply,filtered
 
 
 
 
 if __name__ =='__main__':
-    doc_paths=[os.path.join(os.getcwd(),'data','WSQ.pdf'),os.path.join(os.getcwd(),'data','LDEM.pdf'),os.path.join(os.getcwd(),'data','PDDE.pdf')]
-    doc_chunks = extract_from_pdfs(doc_paths)
+    doc_paths=[os.path.join(os.getcwd(),'data','WSQ.pdf')]
+    doc_chunks = extract_from_pdfs(doc_paths,chunk_size=300,chunk_overlap=150)
     conv = []
     for doc in doc_chunks:
         for t in doc['text']:
