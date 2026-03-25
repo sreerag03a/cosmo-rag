@@ -1,10 +1,41 @@
 import numpy as np
 import os
+import pickle
+import faiss
+# from time import time
+
 from advanced.ingestion import extract_from_pdfs
-from advanced.chunking import chunk_per_doc_sec
-from advanced.embed import embed_index,retrieve,detect_query_type
+from advanced.embed import embed_index,retrieve,detect_query_type,load_model
 from baseline.basic_pipeline import score_chunk
 import ollama
+
+
+def load_or_buildIndex():
+    cachepath = os.path.join(os.getcwd(),'cached')
+    if os.path.exists(os.path.join(os.getcwd(),'cached','chunks.pkl')):
+        print('Loading from cache...')
+        index = faiss.read_index(os.path.join(cachepath,'faiss.index'))
+        with open(os.path.join(cachepath,'chunks.pkl'),'rb') as f:
+            doc_chunks = pickle.load(f)
+        conv = []
+        for doc in doc_chunks:
+            for t in doc['text']:
+                conv.append((t,doc['section'],doc['source']))
+        sections = [doc['section'] for doc in doc_chunks]
+    else:
+        print('Building index from scratch...')
+        doc_paths=[os.path.join(os.getcwd(),'data','WSQ.pdf')]
+        doc_chunks = extract_from_pdfs(doc_paths,chunk_size=400,chunk_overlap=150)
+        conv = []
+        for doc in doc_chunks:
+            for t in doc['text']:
+                conv.append((t,doc['section'],doc['source']))
+        sections = [doc['section'] for doc in doc_chunks]
+        model,index = embed_index(doc_chunks)
+        faiss.write_index(index,os.path.join(cachepath,'faiss.index'))
+        with open(os.path.join(cachepath,'chunks.pkl'),'wb') as f:
+            pickle.dump(doc_chunks,f)
+    return index,sections,conv
 
 def score_chunk(chunk, query):
     query_words = set(query.lower().split())
@@ -51,16 +82,21 @@ def rag_pipeline(query,model,index,sections,conv,model_choice = "gemma:2b"):
 
 
 if __name__ =='__main__':
-    doc_paths=[os.path.join(os.getcwd(),'data','WSQ.pdf')]
-    doc_chunks = extract_from_pdfs(doc_paths,chunk_size=300,chunk_overlap=150)
-    conv = []
-    for doc in doc_chunks:
-        for t in doc['text']:
-            conv.append((t,doc['section'],doc['source']))
-    sections = [doc['section'] for doc in doc_chunks]
-    # print(sections)
-    model,index = embed_index(doc_chunks)
-
+    # doc_paths=[os.path.join(os.getcwd(),'data','WSQ.pdf')]
+    # doc_chunks = extract_from_pdfs(doc_paths,chunk_size=300,chunk_overlap=150)
+    # conv = []
+    # for doc in doc_chunks:
+    #     for t in doc['text']:
+    #         conv.append((t,doc['section'],doc['source']))
+    # sections = [doc['section'] for doc in doc_chunks]
+    # # print(sections)
+    # model,index = embed_index(doc_chunks)
+    # start = time()
+    index,sections,conv = load_or_buildIndex()
+    model = load_model()
+    # end = time()
+    # print(f'Time taken : {end-start} seconds')
     query = input("Ask a question : ")
     rag_pipeline(query,model,index,sections,conv)
+
     

@@ -2,8 +2,8 @@ import streamlit as st
 import os
 
 from advanced.ingestion import extract_from_pdfs
-from advanced.embed import embed_index
-from advanced.pipeline import rag_pipeline
+from advanced.embed import embed_index,load_model
+from advanced.pipeline import rag_pipeline,load_or_buildIndex
 
 st.title("CosmoRAG")
 doc_paths = []
@@ -12,17 +12,19 @@ mode = st.radio(
     ["Use default PDFs", "Upload PDFs"]
 )
 if mode=="Use default PDFs":
-    items = [os.path.join(os.getcwd(),'data','WSQ.pdf')]
-    for item in items:
-        doc_paths.append(item)
-    # print(doc_paths)
-    doc_chunks = extract_from_pdfs(doc_paths,chunk_size=300,chunk_overlap=150)
-    docs_formatted = []
-    for doc in doc_chunks:
-        for t in doc['text']:
-            docs_formatted.append((t,doc['section'],doc['source']))
-    sections = [doc['section'] for doc in doc_chunks]
-    model,index = embed_index(doc_chunks)
+    # items = [os.path.join(os.getcwd(),'data','WSQ.pdf')]
+    # for item in items:
+    #     doc_paths.append(item)
+    # # print(doc_paths)
+    # doc_chunks = extract_from_pdfs(doc_paths,chunk_size=300,chunk_overlap=150)
+    index,sections,docs_formatted = load_or_buildIndex()
+    model = load_model()
+    # docs_formatted = []
+    # for doc in doc_chunks:
+    #     for t in doc['text']:
+    #         docs_formatted.append((t,doc['section'],doc['source']))
+    # sections = [doc['section'] for doc in doc_chunks]
+    # model,index = embed_index(doc_chunks)
 
 
 
@@ -51,7 +53,7 @@ else:
         for item in items:
             doc_paths.append(item)
         # print(doc_paths)
-        doc_chunks = extract_from_pdfs(doc_paths)
+        doc_chunks = extract_from_pdfs(doc_paths,chunk_size=400,chunk_overlap=150)
         for file in delfiles:
             os.remove(file)
         docs_formatted = []

@@ -18,6 +18,9 @@ def embed_index(docs):
     index.add(np.array(embeddings))
     return model,index
 
+def load_model():
+    model = SentenceTransformer('all-mpnet-base-v2')
+    return model
 
 def retrieve(query,model,index,n_res = 3):
     q_embed = model.encode([query])
