@@ -2,7 +2,9 @@ import numpy as np
 import os
 import pickle
 import faiss
-# from time import time
+from dotenv import load_dotenv
+load_dotenv()
+from langchain_groq import ChatGroq
 
 from advanced.ingestion import extract_from_pdfs
 from advanced.embed import embed_index,retrieve,detect_query_type,load_model
@@ -42,7 +44,7 @@ def score_chunk(chunk, query):
     chunk_words = set(chunk.lower().split())
     return len(query_words & chunk_words)
 
-def rag_pipeline(query,model,index,sections,conv,model_choice = "gemma:2b"):
+def rag_pipeline(query,model,index,sections,conv,on_device=False,model_choice = "llama-3.1-8b-instant"):
     indices = retrieve(query,model,index,n_res=10)
     allowed_sections = detect_query_type(query,sections)
 
@@ -63,17 +65,23 @@ def rag_pipeline(query,model,index,sections,conv,model_choice = "gemma:2b"):
         filtered = retrieved
     # print(len(filtered))
     prompt = f"Use only the provided cosmology context to answer the query : {query}\n\nContext:\n"
-    # for t in filtered:
-    #     print(t[0])
     for t in filtered:
-        # print(t[2])
         prompt += f"Source :{t[2]}, text : {t[0]}"
     prompt += "\nProvide a clear and brief answer.\nDo NOT add information not explicitly mentioned.\nDo NOT assume common cosmological datasets."
-    response = ollama.chat(
-        model=model_choice,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    reply = response['message']['content']
+    if on_device == False:
+        groq = ChatGroq(
+            model = model_choice,
+            temperature=0.2,
+            api_key=os.getenv("GROQ_KEY")
+        )
+        response = groq.invoke(prompt)
+        reply = response.content if hasattr(response, "content") else str(response)
+    else:
+        response = ollama.chat(
+            model=model_choice,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        reply = response['message']['content']
     print('RAG Response:')
     print(reply)
     return reply,filtered

@@ -12,6 +12,9 @@ keywords = ["cosmology", "arxiv", "rag"]
 dependencies = [
     "pymupdf",
     "langchain",
+    "langchain-groq",
+    "langchain-community",
+    "python-dotenv",
     "langchain-text-splitters",
     "sentence-transformers",
     "faiss-cpu",

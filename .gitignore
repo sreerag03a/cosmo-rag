@@ -8,15 +8,8 @@ __pycache__/
 
 
 #Ignore ouputs
-outputs/*
-!outputs/models
-!outputs/metrics.png
-!outputs/metrics2.png
-!outputs/lcdm_chains.png
-!outputs/wcdm_chains.png
-src/mcmc/cythonize/*
-!src/mcmc/cythonize/setup.py
-!src/mcmc/cythonize/cosmofunctions.pyx
+cached/*
+.vscode
 
 
 catboost_info

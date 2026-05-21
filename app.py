@@ -65,11 +65,19 @@ else:
 
 
 
-        
-model_choice = st.selectbox(
-        "Select model",
-        ["phi3:mini", "gemma:2b"]
-    )
+if_on_device = st.selectbox(
+     "Use On device LLM?",
+     ["Yes (Uses Ollama)", "No (Uses Groq)"]
+)
+if if_on_device == "Yes (Uses Ollama)":
+    model_choice = st.selectbox(
+            "Select model",
+            ["phi3:mini", "gemma:2b"]
+        )
+    on_device = True
+else:
+    model_choice = "llama-3.1-8b-instant"
+    on_device = False
 if "history" in st.session_state:
     for item in st.session_state.history:
                 st.write("**You:**", item["query"])
@@ -79,7 +87,7 @@ if query:
     if "history" not in st.session_state:
         st.session_state.history = []
     with st.spinner("Thinking..."):
-        answer = rag_pipeline(query,model,index,sections,docs_formatted,model_choice)[0]
+        answer = rag_pipeline(query,model,index,sections,docs_formatted, on_device=on_device, model_choice=model_choice)[0]
         st.session_state.history.append({
     "query": query,
     "answer": answer
