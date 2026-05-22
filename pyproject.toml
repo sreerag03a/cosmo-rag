@@ -13,6 +13,7 @@ dependencies = [
     "pymupdf",
     "langchain",
     "langchain-groq",
+    "langchain-ollama",
     "langchain-community",
     "python-dotenv",
     "langchain-text-splitters",
@@ -20,7 +21,6 @@ dependencies = [
     "faiss-cpu",
     "numpy",
     "streamlit",
-    "ollama",
 ]
 
 [build-system]

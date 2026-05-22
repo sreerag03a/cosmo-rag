@@ -4,12 +4,11 @@ import pickle
 import faiss
 from dotenv import load_dotenv
 load_dotenv()
-from langchain_groq import ChatGroq
+
 
 from advanced.ingestion import extract_from_pdfs
 from advanced.embed import embed_index,retrieve,detect_query_type,load_model
-from baseline.basic_pipeline import score_chunk
-import ollama
+from advanced.agent import score_chunk
 
 
 def load_or_buildIndex():
@@ -39,10 +38,6 @@ def load_or_buildIndex():
             pickle.dump(doc_chunks,f)
     return index,sections,conv
 
-def score_chunk(chunk, query):
-    query_words = set(query.lower().split())
-    chunk_words = set(chunk.lower().split())
-    return len(query_words & chunk_words)
 
 def rag_pipeline(query,model,index,sections,conv,on_device=False,model_choice = "llama-3.1-8b-instant"):
     indices = retrieve(query,model,index,n_res=10)
@@ -69,19 +64,21 @@ def rag_pipeline(query,model,index,sections,conv,on_device=False,model_choice = 
         prompt += f"Source :{t[2]}, text : {t[0]}"
     prompt += "\nProvide a clear and brief answer.\nDo NOT add information not explicitly mentioned.\nDo NOT assume common cosmological datasets."
     if on_device == False:
-        groq = ChatGroq(
+        from langchain_groq import ChatGroq
+        llm = ChatGroq(
             model = model_choice,
             temperature=0.2,
             api_key=os.getenv("GROQ_KEY")
         )
-        response = groq.invoke(prompt)
-        reply = response.content if hasattr(response, "content") else str(response)
+        
     else:
-        response = ollama.chat(
+        from langchain_ollama import ChatOllama
+        llm = ChatOllama(
             model=model_choice,
-            messages=[{"role": "user", "content": prompt}]
+            temperature=0.2
         )
-        reply = response['message']['content']
+    response = llm.invoke(prompt)
+    reply = response.content if hasattr(response, "content") else str(response)
     print('RAG Response:')
     print(reply)
     return reply,filtered
@@ -105,6 +102,6 @@ if __name__ =='__main__':
     # end = time()
     # print(f'Time taken : {end-start} seconds')
     query = input("Ask a question : ")
-    rag_pipeline(query,model,index,sections,conv)
+    rag_pipeline(query,model,index,sections,conv, on_device=True, model_choice="gemma:2b")
 
     

@@ -77,13 +77,6 @@ def split_sections(text:str,path):
             'source': os.path.basename(path)
         })
     sections = merge_sections(sections)
-    # new_sections= []
-    # for sec in sections:
-    #     print(sec)
-    #     print('_______________________________________')
-    #     # if len(sec["text"])>200:
-    #     #     new_sections.append(sec)
-    # print(fike)
     return sections
 
 

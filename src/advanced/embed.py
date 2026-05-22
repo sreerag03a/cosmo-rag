@@ -2,8 +2,7 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import os
-from advanced.ingestion import extract_from_pdfs
-from advanced.chunking import chunk_per_doc_sec
+
 
 def embed_index(docs):
     model = SentenceTransformer('all-mpnet-base-v2')
