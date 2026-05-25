@@ -8,7 +8,7 @@ load_dotenv()
 
 from advanced.ingestion import extract_from_pdfs
 from advanced.embed import embed_index,retrieve,detect_query_type,load_model
-from advanced.agent import score_chunk
+from advanced.agent import score_chunk, get_llm
 
 
 def load_or_buildIndex():
@@ -58,25 +58,26 @@ def rag_pipeline(query,model,index,sections,conv,on_device=False,model_choice = 
                 filtered.append((t,section,src))
     if not filtered:
         filtered = retrieved
-    # print(len(filtered))
+    print(len(filtered))
     prompt = f"Use only the provided cosmology context to answer the query : {query}\n\nContext:\n"
     for t in filtered:
         prompt += f"Source :{t[2]}, text : {t[0]}"
     prompt += "\nProvide a clear and brief answer.\nDo NOT add information not explicitly mentioned.\nDo NOT assume common cosmological datasets."
-    if on_device == False:
-        from langchain_groq import ChatGroq
-        llm = ChatGroq(
-            model = model_choice,
-            temperature=0.2,
-            api_key=os.getenv("GROQ_KEY")
-        )
+    llm = get_llm(on_device=on_device,model_choice=model_choice)
+    # if on_device == False:
+    #     from langchain_groq import ChatGroq
+    #     llm = ChatGroq(
+    #         model = model_choice,
+    #         temperature=0.2,
+    #         api_key=os.getenv("GROQ_KEY")
+    #     )
         
-    else:
-        from langchain_ollama import ChatOllama
-        llm = ChatOllama(
-            model=model_choice,
-            temperature=0.2
-        )
+    # else:
+    #     from langchain_ollama import ChatOllama
+    #     llm = ChatOllama(
+    #         model=model_choice,
+    #         temperature=0.2
+    #     )
     response = llm.invoke(prompt)
     reply = response.content if hasattr(response, "content") else str(response)
     print('RAG Response:')

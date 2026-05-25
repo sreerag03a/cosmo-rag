@@ -4,6 +4,13 @@ import os
 from advanced.ingestion import extract_from_pdfs
 from advanced.embed import embed_index,load_model
 from advanced.pipeline import rag_pipeline,load_or_buildIndex
+from advanced.agent import build_agent
+
+
+@st.cache_resource
+def get_agent(_model,_index, sections, docs_formatted, on_device, model_choice):
+    return build_agent(_model,_index,sections,docs_formatted,on_device,model_choice)
+
 
 st.title("CosmoRAG")
 doc_paths = []
@@ -65,6 +72,7 @@ else:
 
 
 
+
 if_on_device = st.selectbox(
      "Use On device LLM?",
      ["Yes (Uses Ollama)", "No (Uses Groq)"]
@@ -78,6 +86,9 @@ if if_on_device == "Yes (Uses Ollama)":
 else:
     model_choice = "llama-3.1-8b-instant"
     on_device = False
+
+
+
 if "history" in st.session_state:
     for item in st.session_state.history:
                 st.write("**You:**", item["query"])
@@ -87,11 +98,17 @@ if query:
     if "history" not in st.session_state:
         st.session_state.history = []
     with st.spinner("Thinking..."):
-        answer = rag_pipeline(query,model,index,sections,docs_formatted, on_device=on_device, model_choice=model_choice)[0]
+        if on_device:
+            answer = rag_pipeline(query,model,index,sections,docs_formatted, on_device=on_device, model_choice=model_choice)[0]
+        else:
+            agent_executor = get_agent(model,index,sections,docs_formatted,on_device,model_choice)
+            answer = agent_executor.invoke({"input": query})['output']
         st.session_state.history.append({
     "query": query,
     "answer": answer
 })
+    
+    
         
         st.markdown("### Answer")
         st.write(answer)

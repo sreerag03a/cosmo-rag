@@ -35,6 +35,10 @@ def build_agent(model,index,sections,conv,on_device=False,model_choice = "llama-
     # Tools for agent
     @tool
     def search_paper(query):
+        """
+        Search the available papers for relevant chunks to the user query. Use this tool for questions specific to the work
+        like about datasets, models or results. Returns relevant chunks and the source it is from.
+        """
         indices = retrieve(query,model,index,n_res=10)
         allowed_sections = detect_query_type(query,sections)
         retrieved = []
@@ -52,41 +56,44 @@ def build_agent(model,index,sections,conv,on_device=False,model_choice = "llama-
                     filtered.append((t,section,src))
         if not filtered:
             filtered = retrieved
-        prompt = f"Use only the provided cosmology context to answer the query : {query}\n\nContext:\n"
+        # prompt = f"Use only the provided cosmology context to answer the query : {query}\n\nContext:\n"
+        prompt = ""
         for t in filtered:
             prompt += f"Source :{t[2]}, text : {t[0]}"
-        prompt += "\nProvide a clear and brief answer.\nDo NOT add information not explicitly mentioned.\nDo NOT assume common cosmological datasets."
+        # prompt += "\nProvide a clear and brief answer.\nDo NOT add information not explicitly mentioned.\nDo NOT assume common cosmological datasets."
         return prompt
     @tool
     def summarize_section(section):
+        """
+        Returns the full text of a named section (eg. 'Results', 'Method', 'Introduction', etc.). Use this tool when the user asks
+        to summarize or explain a whole section.
+        """
         section = section.lower().strip()
         matches = [f"[{src}] {t}" for t,sec,src in conv if section in sec.lower()]
         if not matches:
             return f"No section named '{section}' found."
         return "\n\n".join(matches)
     
-    @tool
-    def general_answer(query):
-        llm = get_llm(on_device=on_device,model_choice=model_choice)
-        response = llm.invoke(f"Answer this cosmology question concisely : {query}")
-        return response.content if hasattr(response,"content") else str(response)
-    
     prompt = ChatPromptTemplate.from_messages([
-        ("system","""You are a cosmology research assistant with access to a few cosmology papers.
-        
-For specific questions about datasets, models, or results mentioned in the papers, use the tool search_paper.
-For requests to summarize a section, use summarize_section.
-For general background concepts not likely in the papers, use general_answer.
+        ("system","""You are a cosmology research assistant with access to a corpus of cosmology papers.
 
-Always cite the source when using search_paper
-         """),
+TOOL SELECTION RULES — follow these strictly:
+- Use search_papers for ANY question about specific facts, datasets, models, methods, or results.
+- Use summarize_section ONLY when the user explicitly says "summarize" or "overview of the [section] section".
+- For general background concepts, answer directly from your own knowledge without using any tool.
+- If a tool returns no results, answer with what you know and DO NOT retry with a different tool.
+
+RESPONSE RULES — follow these strictly:
+- Never mention tools, function calls, or internal processes in your response.
+- Never say things like "the function returned..." or "based on the retrieved chunks...".
+- Just answer the question directly and concisely as if you already knew the answer."""),
     ("human","{input}"),
     ("placeholder","{agent_scratchpad}")
     ])
     llm = get_llm(on_device=on_device, model_choice=model_choice)
-    tools = [search_paper, summarize_section, general_answer]
+    tools = [search_paper, summarize_section]
     agent = create_tool_calling_agent(llm, tools, prompt)
 
-    return AgentExecutor(agent=agent, tools=tools, verbose=True, max_iterations=4)
+    return AgentExecutor(agent=agent, tools=tools, verbose=True, max_iterations=6)
   
 
