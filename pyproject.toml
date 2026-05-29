@@ -13,14 +13,18 @@ dependencies = [
     "pymupdf",
     "langchain",
     "langchain-groq",
+    "groq",
     "langchain-ollama",
     "langchain-community",
+    "lanchain-hunngingface",
     "python-dotenv",
     "langchain-text-splitters",
     "sentence-transformers",
     "faiss-cpu",
     "numpy",
     "streamlit",
+    "ragas",
+    "mlflow"
 ]
 
 [build-system]

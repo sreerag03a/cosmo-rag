@@ -1,0 +1,32 @@
+[
+  {
+    "question": "What is the primary objective of the Woods-Saxon Quintessence (WSQ) model proposed in the paper, and what inspiration does it draw from nuclear physics?",
+    "answer": "The primary objective of the WSQ model is to explain the late-time accelerated expansion of the Universe by characterizing dark energy with a canonical scalar field (quintessence). While a previous study utilized a similar approach to explain early inflation, this paper tests its phenomenological implications for late-time cosmology. It draws inspiration specifically from the mathematical form of the Woods-Saxon potential used in nuclear physics, though its physical interpretation remains entirely distinct within cosmology.",
+    "source": "WSQ.pdf"
+  },
+  {
+    "question": "What are the approximate best-fit values obtained for the Hubble constant (H0$) and the matter energy density parameter (Omega_m0) in the flat cosmology framework of this model?",
+    "answer": "Utilizing Markov Chain Monte Carlo (MCMC) methods for Bayesian inference, the model yields a Hubble constant value of H0 of around  68 km/s/Mpc and a matter energy density parameter of Omega_m0 of around 0.30. These values align closely with the standard Lambda CDM parameters inferred from the Planck CMB data.",
+    "source": "WSQ.pdf"
+  },
+  {
+    "question": "How does the proposed WSQ model compare to the standard Lambda CDM model when evaluated against the Akaike Information Criterion (AIC) and the Bayesian Information Criterion (BIC)?",
+    "answer": "According to the minimum chi-squared and Akaike Information Criterion (AIC) computations, the WSQ model is slightly preferred over the standard Lambda CDM model. However, the Bayesian Information Criterion (BIC) penalizes the extra free parameters of the WSQ model to a greater extent, making the Lambda CDM model the preferred option under the BIC criteria.",
+    "source": "WSQ.pdf"
+  },
+  {
+    "question": "Based on the model's equation of state parameter (w), what type of quintessence model does WSQ represent, and how does its behavior change across different redshift (z) ranges?",
+    "answer": "The WSQ model represents a freezing model of quintessence. At higher redshifts (z > 4.43), the scalar field acts like a stiff fluid (w approaches 1) and together with matter contributes to cosmic deceleration. At later stages (z < 4.43$), the equation of state transitions into the negative acceleration range (-1 < w < -1/3), freezing close to a value of -0.9617 at the present time (z=0) to drive late-time accelerated expansion.",
+    "source": "WSQ.pdf"
+  },
+  {
+    "question": "Why did the authors implement the Centre Manifold Approach during their dynamical system stability analysis, and what did it reveal about Critical Point B?",
+    "answer": "During the linear stability analysis of the autonomous differential equations, Critical Point B (0, 1, 0) yielded a vanishing eigenvalue, making it a non-hyperbolic critical point. Because the linear stability theorem fails under these conditions, the authors had to implement the Centre Manifold theorem to accurately map the system's dimensionality and stability near that point. The approach ultimately revealed that Point B is asymptotically unstable, functioning as a saddle point.",
+    "source": "WSQ.pdf"
+  },
+  {
+    "question": "Which critical point acts as the stable future attractor in the WSQ model, and what does its existence signify?",
+    "answer": "Point C, defined by the coordinates (x_c, y_c, lambda_c) = 1/√6, √(5/6), 1), exhibits three strictly negative eigenvalues, making it the stable future attractor of the model. The presence of this stable attractor confirms that the model possesses global dynamical stability, proving that a vast assortment of initial physical conditions will converge toward the same stable future timeline without running into fine-tuning dilemmas.",
+    "source": "WSQ.pdf"
+  }
+]
